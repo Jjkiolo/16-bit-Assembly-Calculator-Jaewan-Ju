@@ -1,0 +1,1786 @@
+MOV BX, 0x0
+MOV [0x00F0], BX
+MOV AX, 0x1
+MOV [0x00F2], AX
+MOV BX, 0x0
+MOV [0x00F3], BX
+MOV AX, 0x0
+MOV [0x00F5], AX
+JMP zero
+
+loop:
+inputnum1:          #For getting a number before operator
+MOV BX, 0x0
+MOV [directinput], BX
+CALL input
+MOV BX, [directinput] #gets a number digit by digit directly from input value
+CMP BX, 0xA
+JEQ inputnum1
+CALL print
+MOV BX, [directinput]
+CMP BX, 'x'
+JEQ terminating
+CMP BX, 'X'
+JEQ terminating
+CMP BX, 0x2A       
+JL error
+CMP BX, 0x30       
+JL operatorcompare  #if it's lower than 30, it means the input value is either an operator or error
+CMP BX, 0x3A        
+JGE error       #if it's over 3A, for the first digit the input value should be an error so it goes back to the starting point
+MOV BX, [directinput]
+MOV AX, [num1]      #num1 has a storage address to save each digit
+SUB BX, 0x30        #for getting biggest number as well
+MOV [AX], BX        #hence why  [AX]
+MOV AX, [num1] 
+INC AX              #and add 1 to AX and save it back to [num1] 
+MOV [num1], AX
+MOV AX, [digitnum1] #count the number of digits in num1
+INC AX
+MOV [digitnum1], AX
+JMP inputnum1      #it has to go back unless it's an operator
+
+terminating:
+CALL input
+MOV BX, [directinput]
+CALL print
+MOV BX, [directinput]
+CMP BX, 'x'
+JEQ stop
+CMP BX, 'X'
+JEQ stop
+JMP error
+
+stop:   #terminates when double x is put in
+HALT
+
+negativeorerror:
+CMP BX, 0x2D
+JEQ negativenum1
+MOV BX, 0x0
+MOV [directinput], BX
+JMP error
+
+negativenum1:
+MOV AX, 0x1
+MOV [negativenumdecide1], AX
+MOV BX, 0x0
+MOV [directinput], BX
+JMP inputnum1
+
+operatorcompare:
+MOV AX, [digitnum1]
+CMP AX, 0x00        #because if digitnum1 is still 0x01 which is set by default, that means this is either a negative number or an error
+JEQ negativeorerror
+MOV BX, [directinput]
+MOV [operator1], BX
+MOV AX, [num1]
+SUB AX, 0x1
+MOV [num1], AX
+JMP inputnum2
+
+inputnum2:
+MOV BX, 0x0
+MOV [directinput], BX
+CALL input
+MOV BX, [directinput]
+CALL print
+MOV BX, [directinput]
+CMP BX, 0x2A
+JL error
+CMP BX, 0x30
+JL errorornegative2sub
+CMP BX, 0x3A
+JGE =printer
+MOV BX, [directinput]
+MOV AX, [num2]
+SUB BX, 0x30
+MOV [AX], BX
+MOV AX, [num2]
+INC AX
+MOV [num2], AX
+MOV AX, [digitnum2]
+INC AX
+MOV [digitnum2], AX
+JMP inputnum2
+
+errorornegative2sub:
+MOV AX, [digitnum2]
+CMP AX, 0x00
+JEQ errorornegative2
+JMP error
+
+errorornegative2:       #to decide whether num2 is a negative number or not
+CMP BX, 0x2D
+JEQ negativenum2
+MOV BX, 0x0
+MOV [directinput], BX
+JMP error          #if it's not a negative number, it goes straight to get num2
+
+negativenum2:
+MOV AX, 0x1
+MOV [negativenumdecide2], AX
+MOV BX, 0x0
+MOV [directinput], BX
+JMP inputnum2
+
+=printer:       ##errorhandleneeded
+MOV AX, [directinput]
+MOV BX, 0x3D
+CMP AX, BX
+JEQ beforesummingnum1
+JMP error    #otherwise it goes back to inputnum2 as it's a sort of error
+
+input:
+MOV BX, [0x00F5]
+CMP BX, 0x00
+JEQ input
+MOV AX, [0x00F3]
+MOV BX, 0x00
+MOV [0x00F5], BX
+MOV [directinput], AX
+RET
+
+beforesummingnum1:
+MOV BX, [digitnum1]
+CMP BX, 0x7
+JGE error
+MOV BX, [digitnum2]
+CMP BX, 0x7
+JGE error
+MOV BX, [num2]
+SUB BX, 0x1
+MOV [num2], BX
+JMP summingnum1
+
+summingnum1:
+MOV BX, [num1]
+MOV AX, 0xAA9                #to get each number on each digit from the smallest
+CMP BX, AX                  #to move into the next number's summing when it's finished summing all the digits in the first number
+JEQ summingnum2
+MOV BX, [num1]
+MOV AX, [BX]
+MOV BX, [num1]
+SUB BX, 0x1                      #to the biggest 
+MOV [num1], BX              #save it to get the next number which is on the left side in real life
+MOV BX, [forsumming1]
+MUL AX, BX
+MOV BX, [forsumming1]
+MUL BX, 0xA                 #for the number on ones it's going to multiply by, the one on the tens which it's going to multiply by 10
+MOV [forsumming1], BX
+MOV BX, [summednum1]
+ADD AX, BX
+MOV [summednum1], AX       #after summing, it saves the summed number to that storage
+JMP summingnum1            #goes back to get the next digit
+
+Thisisforerrorhandling:
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+
+summingnum2:
+MOV AX, [num2]
+MOV BX, 0xBBA
+CMP AX, BX
+JEQ subarithmetic
+MOV BX, [num2]
+MOV AX, [BX]
+MOV BX, [num2]
+SUB BX, 0x1
+MOV [num2], BX
+MOV BX, [forsumming2]
+MUL AX, BX
+MOV BX, [forsumming2]
+MUL BX, 0xA
+MOV [forsumming2], BX
+MOV BX, [summednum2]
+ADD AX, BX
+MOV [summednum2], AX
+JMP summingnum2
+
+subarithmetic:
+MOV AX, [operator1]
+CMP AX, 0x2A
+JEQ multiplication
+CMP AX, 0x2B
+JEQ additiondecider
+CMP AX, 0x2D
+JEQ subtractiondecider
+CMP AX, 0x2F
+JEQ division
+JMP error
+
+multiplication:
+CALL negativearithmeticsdecider1
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+MUL AX, BX
+MOV [result], AX
+JMP prefinale
+
+additiondecider:
+MOV AX, [negativenumdecide1]
+MOV BX, 0x1
+CMP AX, BX
+JEQ addition2               #it has to check if the absolute first number is bigger than the absolute second number.
+MOV AX, [negativenumdecide2]
+MOV BX, 0x1
+CMP AX, BX
+JEQ inputnum1
+JMP addition1
+
+subtractiondecider:
+MOV AX, [negativenumdecide1]
+MOV BX, 0x1
+CMP AX, BX
+JEQ subtraction2
+MOV AX, [negativenumdecide2]
+MOV BX, 0x1
+CMP AX, BX
+JEQ inputnum1
+JMP subtraction1
+
+negativearithmeticsdecider1:
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+MUL AX, BX
+MOV BX, 0x0
+CMP AX, BX
+JEQ zerofinale
+MOV AX, [negativenumdecide1]
+MOV BX, [negativenumdecide2]
+ADD AX, BX
+CMP AX, 0x1           #because if the sum of them is either 0 or 2 in any multiplication or division, the result is positive
+JEQ negativeresultforarithmetic
+RET
+
+negativeresultforarithmetic:
+MOV AX, 0x1
+MOV [NorP], AX          #to make add '-' before printing the result out
+RET
+
+addition1:               #x+y=
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+ADD BX, AX
+MOV [result], BX
+JMP prefinale
+
+addition2:               
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+CMP AX, BX
+JEQ zerofinale
+JMP subadditionnumflipadd
+
+subaddition2:            #-9000+8000=-1000
+MOV AX, 0x1
+MOV [NorP], AX
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+SUB AX, BX
+MOV [result], AX
+JMP prefinale
+
+subadditionnumflipadd:
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+JMP goingon2
+
+goingon2:
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+CMP AX, BX
+JEQ subaddition2
+CMP AX, 0x0000
+JEQ numflipadd
+DEC AX
+JMP goingon2
+
+numflipadd:                #-x+y= -3+5=2
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+SUB BX, AX
+MOV [result], BX
+JMP prefinale
+
+#SUBTRACTION
+
+subtraction1:           
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+CMP AX, BX
+JEQ zerofinale
+JMP subtractionnumflipsub
+
+subsubtraction1:        #56-34=22
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+SUB AX, BX
+MOV [result], AX
+JMP prefinale
+
+subtractionnumflipsub:  
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+JMP goingon3
+
+goingon3:                 #to find out whether the first number is bigger than the second number or the other way around.
+CMP AX, BX
+JEQ subsubtraction1       #56-34=22     if the first number is bigger, it doesn't need to print out '-' and only needs to do normal subtraction as in subtracting the second number from the first number.
+CMP AX, 0x0000
+JEQ numflipsub            #3-5=-2     if the first number is bigger, it needs to print out '-' and then the 
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+CMP AX, BX
+JEQ subsubtraction1
+CMP AX, 0x0000
+JEQ numflipsub
+DEC AX
+JMP goingon3
+
+numflipsub:               #3-5=-2
+CALL negativeresultforarithmetic
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+SUB BX, AX
+MOV [result], BX
+JMP prefinale
+
+subtraction2:               #-n-n=
+CALL negativeresultforarithmetic        #to indicate it has to print '-'
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+ADD AX, BX                  #absolute numbers of results from x+y= and (-x)+(-y) are the same
+MOV [result], AX
+JMP prefinale
+
+division:
+CALL negativearithmeticsdecider1        #to decide whether the result is going to be negative or not
+MOV AX, [summednum1]
+MOV BX, [summednum2]
+JMP goingon3
+
+goingon3:                               #big number DIV, JGE and JL error solving (maybe two's compliment)
+CMP AX, BX
+JEQ sub3                                
+CMP AX, 0x0000
+JEQ prefinale
+DEC AX
+CMP AX, BX
+JEQ sub3        
+CMP AX, 0x0000
+JEQ prefinale
+DEC AX
+CMP AX, BX
+JEQ sub3        
+CMP AX, 0x0000
+JEQ prefinale
+DEC AX
+CMP AX, BX
+JEQ sub3        
+CMP AX, 0x0000
+JEQ prefinale
+DEC AX
+CMP AX, BX
+JEQ sub3        
+CMP AX, 0x0000
+JEQ prefinale
+DEC AX
+CMP AX, BX
+JEQ sub3        
+CMP AX, 0x0000
+JEQ prefinale
+DEC AX
+CMP AX, BX
+JEQ sub3        
+CMP AX, 0x0000
+JEQ prefinale
+DEC AX
+JMP goingon3
+
+sub3:
+MOV AX, [result]
+INC AX
+MOV [result], AX
+MOV AX, [summednum1]
+SUB AX, BX
+MOV [summednum1], AX
+JMP goingon3
+
+prefinale:
+MOV AX, [result]
+CMP AX, 0x0
+JEQ zerofinale
+JMP tester1
+
+zerofinale:
+MOV BX, '0'
+CALL print
+JMP scratch
+
+tester1:
+MOV AX, [result]
+MOV [subresult], AX
+JMP subgoingon2
+
+subgoingon2:
+MOV AX, [subresult]
+MOV BX, 0x2710
+JMP goingon2
+
+goingon2:
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+CMP AX, BX
+JEQ sub2
+CMP AX, 0x0000
+JEQ tester2
+DEC AX
+JMP goingon2
+
+sub2:
+MOV AX, [result]
+MOV BX, 0x2710
+SUB AX, BX
+MOV [result], AX
+MOV [subresult], AX
+MOV AX, [firstdigit]
+INC AX
+MOV [firstdigit], AX
+MOV AX, [subresult]
+MOV BX, 0x2710
+MOV AX, [subresult]
+JMP goingon2
+
+tester2:
+MOV AX, [result]
+MOV BX, 0x3E8
+CMP AX, BX
+JL tester3
+MOV AX, [result]
+MOV BX, 0x3E8
+SUB AX, BX
+MOV [result], AX
+MOV AX, [seconddigit]
+ADD AX, 0x1
+MOV [seconddigit], AX
+JMP tester2
+
+tester3:
+MOV AX, [result]
+CMP AX, 0x64
+JL tester4
+MOV AX, [result]
+MOV BX, 0x64
+SUB AX, BX
+MOV [result], AX
+MOV AX, [thirddigit]
+ADD AX, 0x1
+MOV [thirddigit], AX
+JMP tester3
+
+tester4:
+MOV AX, [result]
+CMP AX, 0xA
+JL tester5
+MOV AX, [result]
+MOV BX, 0xA
+SUB AX, BX
+MOV [result], AX
+MOV AX, [fourthdigit]
+ADD AX, 0x1
+MOV [fourthdigit], AX
+JMP tester4
+
+tester5:
+MOV AX, [result]
+MOV [fifthdigit], AX
+JMP resultout
+
+resultout:
+MOV AX, [NorP]
+CMP AX, 0x0
+JEQ resultoutreal
+JMP negativeresultout
+
+resultoutreal:
+MOV AX, [firstdigit]
+CMP AX, 0x0
+JNE resultout5
+MOV AX, [seconddigit]
+CMP AX, 0x0
+JNE resultout4
+MOV AX, [thirddigit]
+CMP AX, 0x0
+JNE resultout3
+MOV AX, [fourthdigit]
+CMP AX, 0x0
+JNE resultout2
+MOV AX, [fifthdigit]
+CMP AX, 0x0
+JNE resultout1
+
+negativeresultout:
+MOV BX, '-'
+CALL print
+JMP resultoutreal
+
+resultout1:
+MOV BX, [0xCD0]
+ADD BX, 0x30
+CALL print
+JMP scratch
+
+resultout2:
+MOV BX, [0xCCF]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCD0]
+ADD BX, 0x30
+CALL print
+JMP scratch
+
+resultout3:
+MOV BX, [0xCCE]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCCF]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCD0]
+ADD BX, 0x30
+CALL print
+JMP scratch
+
+resultout4:
+MOV BX, [0xCCD]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCCE]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCCF]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCD0]
+ADD BX, 0x30
+CALL print
+JMP scratch
+
+resultout5:
+MOV BX, [0xCCC]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCCD]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCCE]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCCF]
+ADD BX, 0x30
+CALL print
+MOV BX, [0xCD0]
+ADD BX, 0x30
+CALL print
+JMP scratch
+
+print:
+MOV AX,[0xF2]
+CMP AX,0x0
+JNE print
+MOV [0xF0],BX
+MOV AX,0x1
+MOV [0xF2],AX
+MOV AX, 0x0
+MOV BX, 0x0
+RET
+
+##To do list##
+#0. Tester for input and output*********
+#0. input, output functions organisation (completed)
+#1. edit resultout(completed)
+#2. input(completed)
+#2.1. summing digits(completed)
+#2.2. negative number input(completed)
+#3. arithmatics(completed)
+#4. negative number output(completed)
+#5. error handling(doing manually on each step)
+#5.1. input numbers bigger than the biggest number possible(impossible)
+#5.2. remainder output(optional)
+#5.4. add some instructions
+#6.1. information message
+
+errorblock:
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+
+scratch:        #to re-start the program
+MOV BX, ' '
+CALL print
+MOV BX, 0x0
+MOV AX, 0x0
+MOV [subsummednum1], AX
+MOV [subsummednum2], AX
+MOV [suboperator], AX
+MOV [directinput], AX
+MOV [digitnum1], AX
+MOV [digitnum2], AX
+MOV [summednum1], AX
+MOV [summednum2], AX
+MOV [negativenumdecide1], AX
+MOV [negativenumdecide2], AX
+MOV [operator1], AX
+MOV [operator2], AX
+MOV [firstdigit], AX
+MOV [seconddigit], AX
+MOV [thirddigit], AX
+MOV [fourthdigit], AX
+MOV [fifthdigit], AX
+MOV [result], AX
+MOV [NorP], AX
+MOV [subresult], AX
+MOV [0xAAA], AX
+MOV [0xAAB], AX
+MOV [0xAAC], AX
+MOV [0xAAD], AX
+MOV [0xAAE], AX
+MOV [0xAAF], AX
+MOV [0xBBB], AX
+MOV [0xBBC], AX
+MOV [0xBBD], AX
+MOV [0xBBE], AX
+MOV [0xBBF], AX
+MOV [0xBC0], AX
+MOV AX, 0x1
+MOV [forsumming1], AX
+MOV [forsumming2], AX
+MOV AX, 0xAAA
+MOV [num1], AX
+MOV AX, 0xBBB
+MOV [num2], AX
+JMP loop
+
+subsummednum1: EQU 0xD2C
+subsummednum2: EQU 0xD2E
+suboperator: EQU 0x0E10
+directinput: EQU 0x0E14
+digitnum1: EQU 0x0E16
+digitnum2: EQU 0x0E18
+summednum1: EQU 0x0E1A
+summednum2: EQU 0x0E1C
+negativenumdecide1: EQU 0x0F1E
+negativenumdecide2: EQU 0x0F20
+operator1: EQU 0x0F2C
+operator2: EQU 0x0F2D
+firstdigit: EQU 0xCCC
+seconddigit: EQU 0xCCD
+thirddigit: EQU 0xCCE
+fourthdigit: EQU 0xCCF
+fifthdigit: EQU 0xCD0
+result: EQU 0xC26
+NorP: EQU 0xC28
+subresult: EQU 0xC2A
+forsumming1: DC.W 0x1
+forsumming2: DC.W 0x1
+num1: DC.W 0xAAA
+num2: DC.W 0xBBB
+
+error:
+MOV BX, 0xA
+CALL print
+MOV BX, 'E'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'r'
+CALL print
+JMP scratch
+
+zero:
+MOV BX, '+'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, '='
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'A'
+CALL print
+MOV BX, 'd'
+CALL print
+MOV BX, 'd'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 0xA
+CALL print
+MOV BX, '-'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, '='
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'S'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'b'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 0xA
+CALL print
+
+MOV BX, '*'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, '='
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'M'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'p'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 0xA
+CALL print
+
+MOV BX, '/'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, '='
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'D'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'v'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'W'
+CALL print
+MOV BX, 'h'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'y'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'p'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, '='
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, '.'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'E'
+CALL print
+MOV BX, '.'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, '.'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, '8'
+CALL print
+MOV BX, '9'
+CALL print
+MOV BX, '/'
+CALL print
+MOV BX, '5'
+CALL print
+MOV BX, '='
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'I'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'm'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, 'h'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'k'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'f'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'y'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'm'
+CALL print
+MOV BX, 'b'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'b'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, 'm'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, ','
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'w'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, 'w'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'f'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'y'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'm'
+CALL print
+MOV BX, 'b'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'x'
+CALL print
+MOV BX, 'p'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'd'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'b'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, 'm'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'h'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, '6'
+CALL print
+MOV BX, '5'
+CALL print
+MOV BX, '5'
+CALL print
+MOV BX, '3'
+CALL print
+MOV BX, '5'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, '-'
+CALL print
+MOV BX, '6'
+CALL print
+MOV BX, '5'
+CALL print
+MOV BX, '5'
+CALL print
+MOV BX, '3'
+CALL print
+MOV BX, '5'
+CALL print
+MOV BX, '.'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'P'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'x'
+CALL print
+MOV BX, 'x'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'm'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'h'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, '.'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'F'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'h'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, ','
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'p'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, '-'
+CALL print
+MOV BX, 's'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'h'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'p'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'g'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'm'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'f'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'r'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'e'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'h'
+CALL print
+MOV BX, ' '
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'c'
+CALL print
+MOV BX, 'u'
+CALL print
+MOV BX, 'l'
+CALL print
+MOV BX, 'a'
+CALL print
+MOV BX, 't'
+CALL print
+MOV BX, 'i'
+CALL print
+MOV BX, 'o'
+CALL print
+MOV BX, 'n'
+CALL print
+MOV BX, '.'
+CALL print
+MOV BX, ' '
+CALL print
+JMP loop
