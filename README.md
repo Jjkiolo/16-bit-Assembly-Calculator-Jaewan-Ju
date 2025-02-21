@@ -13,7 +13,7 @@
 
 # Justification about the messes in the code
   There are some blocks full of nop instructions. Those areas should be clear with no instructions as they are likely to be connected to the console.
-  The program could be slow when dealing with lengthy numbers. JGE and JL do not work properly when it comes to big numbers due to two's complement.
+  The program could be slow when dealing with lengthy numbers. JGE and JL do not work properly when it comes to big numbers due to two's complement supported by WASP.
 
 # How to compile the code on Sting and run it on WASP
   1. unzip WASP4aq(1).zip
