@@ -1,21 +1,21 @@
 # 16-bit-Assembly-Calculator-Jaewan-Ju
-Features
-  displays instructions beforehand
-  , supports 4 different operators -, +, * and /
-  , terminates when either 'XX', 'xx', 'Xx' or 'xX' is put in
-  , displays negative answers correctly
-    e.g. 22-77 = -55
-  , handles numbers of any length from 0 to 65525.
-    e.g. 22+1132 = 1154
-  , handles negative input values.
-    e.g. -2+7 = 5
-  and displays the error message when user doesn't follow the instructions correctly
+# Features
+  displays instructions beforehand,
+  supports 4 different operators -, +, * and /,
+  terminates when either 'XX', 'xx', 'Xx' or 'xX' is put in,
+  displays negative answers correctly
+    e.g. 22-77 = -55,
+  handles numbers of any length from 0 to 65525.
+    e.g. 22+1132 = 1154,
+  handles negative input values
+    e.g. -2+7 = 5,
+  and displays the error message when user doesn't follow the instructions correctly.
 
-Justification about the messes in the code
+# Justification about the messes in the code
   There are some blocks full of nop instructions. Those areas should be clear with no instructions as they are likely to be connected to the console.
   The program could be slow when dealing with lengthy numbers. JGE and JL do not work properly when it comes to big numbers due to two's complement.
 
-How to compile the code on Sting and run it on WASP
+# How to compile the code on Sting and run it on WASP
   1. unzip WASP4aq(1).zip
   2. Open 16-bit-Assembly-Calculator by Jaewan Ju.txt
   3. Press Ctrl + A and Ctrl + C
