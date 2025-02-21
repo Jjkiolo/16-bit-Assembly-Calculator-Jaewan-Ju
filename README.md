@@ -1,15 +1,15 @@
 # 16-bit-Assembly-Calculator-Jaewan-Ju
 Features
   displays instructions beforehand
-  supports 4 different operators -, +, * and /
-  terminates when either 'XX', 'xx', 'Xx' or 'xX' is put in
-  displays negative answers correctly
-    For example: 22-77 = -55
-  handles numbers of any length from 0 to 65525.
-    For example: 22+1132 = 1154
-  handles negative input values.
-    For example: -2+7 = 5
-  displays the error message when user doesn't follow the instructions correctly
+  , supports 4 different operators -, +, * and /
+  , terminates when either 'XX', 'xx', 'Xx' or 'xX' is put in
+  , displays negative answers correctly
+    e.g. 22-77 = -55
+  , handles numbers of any length from 0 to 65525.
+    e.g. 22+1132 = 1154
+  , handles negative input values.
+    e.g. -2+7 = 5
+  and displays the error message when user doesn't follow the instructions correctly
 
 Justification about the messes in the code
   There are some blocks full of nop instructions. Those areas should be clear with no instructions as they are likely to be connected to the console.
